@@ -1,4 +1,3 @@
-#include<stdio.h>
 #include<omp.h>
 #include<time.h>
 #include<stdlib.h>
@@ -30,6 +29,10 @@ int* gen_data(int size){
     return res;
 }
 
+int compare(const void* a, const void* b){
+    return (*(int *)a - *(int *)b);
+}
+
 int main(){
 
     srand(time(NULL));
@@ -44,5 +47,26 @@ int main(){
             return -2;
     }
 
+    int **ref = (int**)malloc(sizeof(int*)*10);
+    if(ref == NULL)
+        return -3;
     
+    for(int i = 0; i < 10; i++){
+
+        ref[i] = (int*)malloc(sizeof(int)*1000);
+        if(ref[i] == NULL)
+            return -4;
+
+        memcpy(ref[i], data[i], sizeof(int)*1000);
+
+        qsort(ref[i], 1000, sizeof(int), compare);
+
+    }
+
+    for(int i = 0; i < 1000; i++){
+        
+    }
+
+    return 0;
+
 }
