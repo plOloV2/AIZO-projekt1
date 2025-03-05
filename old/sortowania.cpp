@@ -68,16 +68,22 @@ vector<int> wybor(vector <int> a){
     }
     return a;
 }
+
 vector<int> scal(vector <int> a){
     if(a.size()<=1) return a;
     vector <int> b, c;
     int x=a.size()/2;
+
     for(int i=0; i<x; i++) b.push_back(a[i]);
+
     for(int i=x; i<a.size(); i++) c.push_back(a[i]);
+
     b=scal(b);
     c=scal(c);
     a.clear();
+
     int ci=0, bi=0;
+    
     while(bi<b.size() or ci<c.size()){
     	if(ci==c.size()){
     		for(; bi<b.size(); bi++) a.push_back(b[bi]);
@@ -98,6 +104,7 @@ vector<int> scal(vector <int> a){
     }
     return a;
 }
+
 vector<int> stozek(vector <int> a){
     for(int i=a.size()/2-1; i>=0; i--) a=kop(a, i, a.size());
     for(int i=a.size()-1; i>1; i--){
