@@ -1,61 +1,10 @@
-#include<omp.h>
-#include<time.h>
-#include<stdlib.h>
-#include<string.h>
+#include"lib.h"
 #include"algorithms/bubble_sort.h"
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
 #include"algorithms/merge_sort.h"
 #include"algorithms/quick_sort.h"
 #include"algorithms/select_sort.h"
-
-int* gen_data(int size){
-
-    int num, *res = NULL;
-
-    res = (int*)malloc(sizeof(int)*size);
-
-    if(res == NULL)
-        return NULL;
-
-    for(int i = 0; i < size; i++){
-        unsigned char *byte_ptr = (unsigned char *)&num;
-
-        for (size_t k = 0; k < sizeof(int); k++) 
-            *byte_ptr++ = rand() % 256;
-
-        res[i] = num;
-    }
-
-    return res;
-}
-
-int compare(const void* a, const void* b){
-    return (*(int *)a - *(int *)b);
-}
-
-int compare_arrays(int *a, int *b, int size){
-
-    for(int i = 0; i < size; i++)
-        if(a[i] != b[i])
-            return 0;
-    
-    return 1;
-
-}
-
-double sort(int *data, int size, int *ref, void (*f)(int *, int)){
-
-    double t = omp_get_wtime();
-    (*f)(data, size);
-    t = omp_get_wtime() - t;
-    
-    if(compare_arrays(data, ref, size)){
-        return t;
-    }
-
-    return 0;
-}
 
 int main(int argc, char** argv){
 
@@ -97,13 +46,17 @@ int main(int argc, char** argv){
             qsort(ref[i], ammount, sizeof(int), compare);
     
         }
+
+        int error = 0;
     
         #pragma omp parallel for
         for(int i = 0; i < 1000; i++){
 
             int *x = (int*)malloc(sizeof(int) * ammount);
-            if(x == NULL)
-                return -7;
+            if(x == NULL){
+                error = -7;
+                continue;;
+            }
             
             memcpy(x, data[i%10], sizeof(int)*ammount);
 
@@ -116,6 +69,13 @@ int main(int argc, char** argv){
 
         }
 
+        if(error)
+            return error;
+
+        double *result = final_result(results, 1000);
+        if(result = NULL)
+            return -8;
+
         for(int i = 0; i < 10; i++){
             free(data[i]);
             data[i] = NULL;
@@ -126,6 +86,9 @@ int main(int argc, char** argv){
 
         free(results);
         results = NULL;
+
+        free(result);
+        result = NULL;
             
     }
 
