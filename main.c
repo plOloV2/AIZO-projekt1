@@ -74,25 +74,25 @@ int main(int argc, char** argv){
 
             results[i][1] = sort(x, ammount, ref[i%10], QBubbleSort);
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            // results[i][2] = sort(x, ammount, ref[i%10], HeapSort);
+            results[i][2] = sort(x, ammount, ref[i%10], HeapSort);
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            // results[i][3] = sort(x, ammount, ref[i%10], InsertSort);
+            results[i][3] = sort(x, ammount, ref[i%10], InsertSort);
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            // results[i][4] = sort(x, ammount, ref[i%10], MergeSort);
+            results[i][4] = sort(x, ammount, ref[i%10], MergeSort);
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            // results[i][5] = sort(x, ammount, ref[i%10], QuickSort);
+            results[i][5] = sort(x, ammount, ref[i%10], QuickSort);
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            // results[i][6] = sort(x, ammount, ref[i%10], SelectSort);
+            results[i][6] = sort(x, ammount, ref[i%10], SelectSort);
 
             free(x);
             x = NULL;

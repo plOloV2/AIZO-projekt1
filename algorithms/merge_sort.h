@@ -1,0 +1,1 @@
+void MergeSort(int arr[], int n);
