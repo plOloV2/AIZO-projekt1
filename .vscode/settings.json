@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "string.h": "c",
+        "bubble_sort.h": "c",
+        "*.tcc": "cpp",
+        "list": "cpp",
+        "float.h": "c"
+    }
+}
