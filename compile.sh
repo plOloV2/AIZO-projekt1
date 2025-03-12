@@ -67,13 +67,16 @@ if $CLEAN; then
 fi
 
 if $WINDOWS; then
+    FLAGS+=("algorithms/bubble_sort_x86.s")
     echo "Compiling program for Windows with flags: ${FLAGS[@]}"
     comp_time x86_64-w64-mingw32-gcc "$SOURCE_FILE" -o "$BIN_FILES_LOCATION/$OUTPUT_BINARY_WINDOWS" "${FLAGS[@]}"
 else
     if $ARM; then
+        FLAGS+=("algorithms/bubble_sort_aarch64.s")
         echo "Compiling program for Linux ARM with flags: ${FLAGS[@]}"
         comp_time aarch64-linux-gnu-gcc "$SOURCE_FILE" -o "$BIN_FILES_LOCATION/$OUTPUT_BINARY_LINUX" "${FLAGS[@]}"
     else 
+        FLAGS+=("algorithms/bubble_sort_x86.s")
         echo "Compiling program for Linux x86 with flags: ${FLAGS[@]}"
         comp_time gcc "$SOURCE_FILE" -o "$BIN_FILES_LOCATION/$OUTPUT_BINARY_LINUX" "${FLAGS[@]}"
     fi

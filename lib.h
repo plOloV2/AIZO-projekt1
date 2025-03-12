@@ -119,7 +119,7 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
     fprintf(fp, "------------------------------------------------------------------\n");
 
     const char *algorithm_names[] = {
-        "BubbleSort",
+        "BubbleSortASM",
         "QBubbleSort",
         "HeapSort",
         "InsertSort",
