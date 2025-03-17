@@ -25,7 +25,7 @@ int main(int argc, char** argv){
     if(results == NULL)
         return 4;
 
-    double **result = NULL;
+    double **result_final = NULL;
 
     for(int n = 1; n < argc; n++){                  //main loop
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv){
 
         }
 
-        int error = 0;
+        int error = 0, progres = 0;
     
         #pragma omp parallel for
         for(int i = 0; i < 1000; i++){
@@ -94,19 +94,31 @@ int main(int argc, char** argv){
 
             // results[i][6] = sort(x, ammount, ref[i%10], SelectSort);
 
+            for(int o = 2; o < 7; o++)
+                results[i][o] = 0;
+
             free(x);
             x = NULL;
+
+            #pragma omp atomic
+            progres++;
+
+            if(omp_get_thread_num() == 0){
+                #pragma omp critical
+                printf("\rProgress: %i%%", progres / 10);
+                fflush(stdout);
+            }
 
         }
 
         if(error)
             return error;
 
-        result = final_result(results, 1000, 7);
-        if(result == NULL)
+        result_final = final_result(results, 1000, 7);
+        if(result_final == NULL)
             return 9;
 
-        if(!print_results_to_file(result, 7, "Results", n))
+        if(!print_results_to_file(result_final, 7, "Results", n))
             return 10;
 
         for(int i = 0; i < 10; i++){
@@ -123,12 +135,12 @@ int main(int argc, char** argv){
         }
             
         for(int i = 0; i < 7; i++){
-            free(result[i]);
-            result[i] = NULL;
+            free(result_final[i]);
+            result_final[i] = NULL;
         }
 
-        free(result);
-        result = NULL;
+        free(result_final);
+        result_final = NULL;
             
     }
 
