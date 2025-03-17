@@ -68,11 +68,11 @@ int main(int argc, char** argv){
                 continue;
             }
 
-            results[i][0] = sort(x, ammount, ref[i%10], BubbleSortASM);
+            results[i][0] = sort(x, ammount, ref[i%10], QBubbleSort);
 
             memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            results[i][1] = sort(x, ammount, ref[i%10], QBubbleSort);
+            results[i][1] = sort(x, ammount, ref[i%10], BubbleSortASM);
 
             // memcpy(x, data[i%10], sizeof(int)*ammount);
 

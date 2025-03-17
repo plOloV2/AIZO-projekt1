@@ -1,4 +1,5 @@
 .global BubbleSortASM
+.text
 
 BubbleSortASM:
     // Inputs:
