@@ -34,16 +34,10 @@ int compare(const void* a, const void* b){
 
 int compare_arrays(int *a, int *b, int size){
 
-    for(int i = 0; i < size; i++){
-        // int x = a[i], y = b[i];
-        // if(x > y)
-        //     x++;
-
+    for(int i = 0; i < size; i++)
         if(a[i] != b[i])
             return 0;
-    }
         
-    
     return 1;
 
 }

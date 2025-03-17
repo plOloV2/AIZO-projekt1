@@ -2,9 +2,18 @@
 #include"algorithms/bubble_sort.h"
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
-#include"algorithms/merge_sort.h"
 #include"algorithms/quick_sort.h"
-#include"algorithms/select_sort.h"
+#include"algorithms/shell_sort.h"
+
+/*
+    za każdym razem nowe dane
+    od razu posortowane ros
+    od razu posortowane mal
+    posortowane częsciowo 33% i 67%
+    7 róźnych danych
+    qsort na int i double
+    shell dwa ciągi kroków 
+*/
 
 int main(int argc, char** argv){
 
@@ -88,7 +97,7 @@ int main(int argc, char** argv){
 
             // memcpy(x, data[i%10], sizeof(int)*ammount);
 
-            // results[i][5] = sort(x, ammount, ref[i%10], QuickSort);
+            // results[i][5] = sort(x, ammount, ref[i%10], QuickSortINT);
 
             // memcpy(x, data[i%10], sizeof(int)*ammount);
 
@@ -122,7 +131,7 @@ int main(int argc, char** argv){
         if(result_final == NULL)
             return 9;
 
-        if(print_results_to_file(result_final, 7, "Results", n) != 1)
+        if(print_results_to_file(result_final, 7, "Results", n) != 1    )
             return 10;
 
         for(int i = 0; i < 10; i++){
