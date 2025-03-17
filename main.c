@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 
         for(int i = 0; i < 10; i++){
 
-            data[i] = gen_data(ammount);
+            data[i] = gen_data(ammount, sizeof(int));
             if(data[i] == NULL)
                 return 5;
 
@@ -111,6 +111,10 @@ int main(int argc, char** argv){
 
         }
 
+
+        printf("\rProgress: 100%%\n");
+        fflush(stdout);
+
         if(error)
             return error;
 
@@ -118,7 +122,7 @@ int main(int argc, char** argv){
         if(result_final == NULL)
             return 9;
 
-        if(!print_results_to_file(result_final, 7, "Results", n))
+        if(print_results_to_file(result_final, 7, "Results", n) != 1)
             return 10;
 
         for(int i = 0; i < 10; i++){
