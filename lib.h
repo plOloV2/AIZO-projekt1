@@ -6,7 +6,7 @@
 #include<math.h>
 #include<stdio.h>
 
-void* gen_data(int size, size_t type_size){
+void* gen_data(int size, size_t type_size){                 //function to generate random array of given size and type
 
     void *res = malloc(type_size * size);
 
@@ -24,7 +24,7 @@ void* gen_data(int size, size_t type_size){
     return res;
 }
 
-int compare(const void* a, const void* b){
+int compare(const void* a, const void* b){              //used by build in qsort algorithm, compares two int
 
     int int_a = *(const int *)a;
     int int_b = *(const int *)b;
@@ -32,7 +32,7 @@ int compare(const void* a, const void* b){
     return (int_a > int_b) - (int_a < int_b);
 }
 
-int compare_arrays(int *a, int *b, int size){
+int compare_arrays(int *a, int *b, int size){           //used to compare two arrays
 
     for(int i = 0; i < size; i++)
         if(a[i] != b[i])
@@ -42,19 +42,20 @@ int compare_arrays(int *a, int *b, int size){
 
 }
 
-double sort(int *data, int size, int *ref, void (*f)(int *, int)){
+double sort(int *data, int size, int *ref, void (*f)(int *, int)){      //function used to comapre time of sorting, takes pointer to sorting algorithm as parameter,
+                                                                        //if sorted array don't match ref[], return -1, else returns time of sorting in s as double
 
-    double t = omp_get_wtime();
-    (*f)(data, size);
-    t = omp_get_wtime() - t;
+    double t = omp_get_wtime();             //starts time measurment
+    (*f)(data, size);                       //cals sort function
+    t = omp_get_wtime() - t;                //ends measurment
     
-    if(!compare_arrays(data, ref, size))
-        return -1.0;
+    if(!compare_arrays(data, ref, size))    //checks if arrays was sorted corectly
+        return -1.0;                
 
     return t;
 }
 
-double** final_result(double **results, int size, int num_of_sets){
+double** final_result(double **results, int size, int num_of_sets){     //function to calculate end results
 
     double **final = (double**)malloc(sizeof(double*) * num_of_sets);
     if(final == NULL)
@@ -95,7 +96,7 @@ double** final_result(double **results, int size, int num_of_sets){
     return final;
 }
 
-int print_results_to_file(double **result, int num_algorithms, const char *filename_pref, int n){
+int print_results_to_file(double **result, int num_algorithms, const char *filename_pref, int n){   //function to save end results to file
 
     char filename[256];
     snprintf(filename, sizeof(filename), "%s_%d.txt", filename_pref, n);
@@ -114,16 +115,12 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
         "BubbleSortASM",
         "HeapSort",
         "InsertSort",
-        "MergeSort",
-        "QuickSort",
-        "SelectSort"
+        "QuickSortINT",
+        "QuickSortDOUBLE",
+        "ShellSort"
     };
 
     for (int i = 0; i < num_algorithms; i++){
-        if (result[i] == NULL){
-            fprintf(stderr, "Skipping invalid algorithm entry %d\n", i);
-            continue;
-        }
 
         fprintf(fp, "%-18s %-11.6f %-10.6f %-10.6f %-10.6f\n",
                 algorithm_names[i],
