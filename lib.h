@@ -6,22 +6,19 @@
 #include<math.h>
 #include<stdio.h>
 
-int* gen_data(int size){
+void* gen_data(int size, size_t type_size){
 
-    int num, *res = NULL;
-
-    res = (int*)malloc(sizeof(int)*size);
+    void *res = malloc(type_size * size);
 
     if(res == NULL)
         return NULL;
 
     for(int i = 0; i < size; i++){
-        unsigned char *byte_ptr = (unsigned char *)&num;
+        unsigned char *byte_ptr = (unsigned char *)res + (i * type_size);
 
-        for (size_t k = 0; k < sizeof(int); k++) 
-            *byte_ptr++ = rand() % 256;
+        for(int k = 0; k < type_size; k++) 
+            byte_ptr[k] = rand() % 256;
 
-        res[i] = num;
     }
 
     return res;
@@ -37,16 +34,10 @@ int compare(const void* a, const void* b){
 
 int compare_arrays(int *a, int *b, int size){
 
-    for(int i = 0; i < size; i++){
-        // int x = a[i], y = b[i];
-        // if(x > y)
-        //     x++;
-
+    for(int i = 0; i < size; i++)
         if(a[i] != b[i])
             return 0;
-    }
         
-    
     return 1;
 
 }
@@ -112,14 +103,14 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
         perror("Error opening file");
-        return -1;
+        return 0;
     }
 
     fprintf(fp, "Algorithm          | Average (s) | Std Dev   | Min (s)   | Max (s)\n");
     fprintf(fp, "------------------------------------------------------------------\n");
 
     const char *algorithm_names[] = {
-        "QBubbleSort",
+        "BubbleSort",
         "BubbleSortASM",
         "HeapSort",
         "InsertSort",
@@ -143,5 +134,6 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
     }
 
     fclose(fp);
-    return 0;
+    return 1;
+    
 }
