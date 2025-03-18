@@ -150,7 +150,7 @@ int main(int argc, char** argv){                    //in arguments user secifies
 
             if(omp_get_thread_num() == 0){
                 #pragma omp critical
-                printf("\rProgress: %i%%", progres / 10);
+                printf("\rProgress: %i%%", progres);
                 fflush(stdout);
             }
 
@@ -166,7 +166,7 @@ int main(int argc, char** argv){                    //in arguments user secifies
         if(result_final == NULL)
             return 9;
 
-        if(print_results_to_file(result_final, 7, "Results", n, ammount) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
+        if(print_results_to_file(result_final, 11, "Results", n, ammount) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
             return 10;
 
         for(int i = 0; i < 100; i++){
@@ -174,7 +174,7 @@ int main(int argc, char** argv){                    //in arguments user secifies
             results[i] = NULL;
         }
             
-        for(int i = 0; i < 7; i++){
+        for(int i = 0; i < 11; i++){
             free(result_final[i]);
             result_final[i] = NULL;
         }

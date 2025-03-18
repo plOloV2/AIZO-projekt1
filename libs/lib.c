@@ -1,5 +1,4 @@
 #include<omp.h>
-#include<stdlib.h>
 #include<string.h>
 #include<float.h>
 #include<math.h>
@@ -155,20 +154,20 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
             if(results[i][j] < 0)
                 return NULL;
 
-            if(results[i][j] > final[j/5][(j/5)*4+3])
-                final[j][(j/5)*4+3] = results[i][j];
+            if(results[i][j] > final[j/5][(j%5)*4+3])
+                final[j/5][(j%5)*4+3] = results[i][j];
 
-            if(results[i][j] < final[j][(j/5)*4+2])
-                final[j][(j/5)*4+2] = results[i][j];
+            if(results[i][j] < final[j/5][(j%5)*4+2])
+                final[j/5][(j%5)*4+2] = results[i][j];
 
-            final[j][(j/5)*4] += results[i][j]/(double)size;
+            final[j/5][(j%5)*4] += results[i][j]/(double)size;
 
         }
 
         for(int i = 0; i < size; i++)
-            final[j/5][(j/5)*4+1] += (results[i][j] - final[j/5][(j/5)*4]) * (results[i][j] - final[j/5][(j/5)*4]);
+            final[j/5][(j%5)*4+1] += (results[i][j] - final[j/5][(j%5)*4]) * (results[i][j] - final[j/5][(j%5)*4]);
 
-        final[j/5][(j/5)*4+1] = sqrt(final[j/5][(j/5)*4+1] / (double)size);
+        final[j/5][(j%5)*4+1] = sqrt(final[j/5][(j%5)*4+1] / (double)size);
     }
     
     return final;
@@ -203,7 +202,7 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
 
     for (int i = 0; i < num_algorithms; i++){
 
-        fprintf(fp, "%s, %i, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f, %.12f\n",
+        fprintf(fp, "%s, %i, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f, %.9f\n",
                 algorithm_names[i],
                 ammount,
                 result[i][0],
@@ -226,6 +225,7 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
                 result[i][17],
                 result[i][18],
                 result[i][19]); 
+        
     }
 
     fclose(fp);

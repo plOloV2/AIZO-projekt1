@@ -81,7 +81,7 @@ double sort(void *data, int size, int config, void *ref, void (*f)(void *, int, 
 
     if(config >= 0){
         if(!compare_arraysINT(data, ref, size))    //checks if arrays was sorted corectly
-        return -1.0;
+            return -1.0;
     } else if(!compare_arraysDOUBLE(data, ref, size))
             return -1.0;
 
