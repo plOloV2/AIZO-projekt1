@@ -55,7 +55,7 @@ fi
 BIN_FILES_LOCATION="bin"
 
 # Set compiling flags for gcc
-FLAGS=(-fopenmp -lm algorithms/bubble_sort.c algorithms/heap_sort.c algorithms/insert_sort.c algorithms/quick_sort.c algorithms/shell_sort.c libs/lib.c)
+FLAGS=(-fopenmp -lm algorithms/bubble_sort.c algorithms/heap_sort.c algorithms/insert_sort.c algorithms/quick_sort.c algorithms/shell_sort.c libs/lib.c libs/inner_lib.c)
 
 # Set the source file and output binary names
 SOURCE_FILE="main.c"
