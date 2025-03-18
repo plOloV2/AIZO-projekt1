@@ -1,3 +1,1 @@
-void QuickSortINT(int arr[], int n);
-
-void QuickSortDOUBLE(double arr[], int n);
+void QuickSort(void *arr, int n, int conf);

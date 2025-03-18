@@ -1,1 +1,1 @@
-void Shellsort(int arr[], int n);
+void Shellsort(void *arr, int n, int conf);

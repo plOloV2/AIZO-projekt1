@@ -1,5 +1,6 @@
-void BubbleSort(int arr[], int n){
+void BubbleSort(void *arr, int n, int conf){
 
+    int* data = arr;
     int last_swap;
     int new_limit = n-1;
     
@@ -8,11 +9,11 @@ void BubbleSort(int arr[], int n){
 
         for (int j = 0; j < new_limit; j++){
 
-            if (arr[j] > arr[j+1]){
+            if (data[j] > data[j+1]){
 
-                int temp = arr[j];
-                arr[j] = arr[j+1];
-                arr[j+1] = temp;
+                int temp = data[j];
+                data[j] = data[j+1];
+                data[j+1] = temp;
                 last_swap = j;
 
             }

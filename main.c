@@ -1,4 +1,8 @@
-#include"lib.h"
+#include<stdio.h>
+#include<stdlib.h>
+#include<omp.h>
+#include<time.h>
+#include"libs/lib.h"
 #include"algorithms/bubble_sort.h"
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
@@ -23,17 +27,9 @@ int main(int argc, char** argv){                    //in arguments user secifies
 
     srand(time(NULL));
 
-    int **data = (int**)malloc(sizeof(int*)*10);    //alocating memory for data sets
-    if(data == NULL)
-        return 2;
-
-    int **ref = (int**)malloc(sizeof(int*)*10);     //sorted arrays for reference to check if sorting was succesful
-    if(ref == NULL)
-        return 3;
-
-    double **results = (double**)malloc(sizeof(double*)*1000);      //array that holds all results for later procesing
+    double **results = (double**)malloc(sizeof(double*)*100);      //array that holds all results for later procesing
     if(results == NULL)
-        return 4;
+        return 2;
 
     double **result_final = NULL;                   //array with final results that will be saved to file
 
@@ -41,74 +37,113 @@ int main(int argc, char** argv){                    //in arguments user secifies
 
         int ammount = atoi(argv[n]);
 
-        for(int i = 0; i < 10; i++){                //generation of data sets, each array has size of argv[n]
-
-            data[i] = gen_data(ammount, sizeof(int));
-            if(data[i] == NULL)
-                return 5;
-
-            ref[i] = (int*)malloc(sizeof(int)*ammount);
-            if(ref[i] == NULL)
-                return 6;
-
-            memcpy(ref[i], data[i], sizeof(int)*ammount);   //copies generated data to new array, and then sorts it with build in qsort() function
-
-            qsort(ref[i], ammount, sizeof(int), compare);   
-
-        }
-
         int error = 0, progres = 0;
     
         #pragma omp parallel for                    //multi-thread part of program, every iteration of this for is executed on separate thread
-        for(int i = 0; i < 1000; i++){
+        for(int i = 0; i < 100; i++){
 
-            int *x = (int*)malloc(sizeof(int) * ammount);   //creats local copy of data set 
-            if(x == NULL){
+            int **data_int = creat_dataINT(ammount);
+            if(data_int == NULL){
                 #pragma omp atomic write
-                error = 7;
+                error = 3;
+                continue;
+            }
+
+            double **data_double = creat_dataDOUBLE(ammount);
+            if(data_double == NULL){
+                #pragma omp atomic write
+                error = 4;
+                continue;
+            }
+
+
+            results[i] = (double*)malloc(sizeof(double) * 55);
+            if(results[i] == NULL){
+                #pragma omp atomic write
+                error = 5;
+                continue;
+            }
+
+
+            if(sort_results((void**)data_int, ammount, 0, BubbleSort, results[i], 0) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+
+            if(sort_results((void**)data_int, ammount, 0, BubbleSortASM, results[i], 5) != 0){
+                #pragma omp atomic write
+                error = 6;
                 continue;
             }
             
-            memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            results[i] = (double*)malloc(sizeof(double) * 7);
-            if(results[i] == NULL){
+            if(sort_results((void**)data_int, ammount, 0, HeapSort, results[i], 10) != 0){
                 #pragma omp atomic write
-                error = 8;
+                error = 6;
                 continue;
-            }                                       
-                                                                                //sorts local copy and compares to ref[], after every sort() local copy is restored
-            results[i][0] = sort(x, ammount, ref[i%10], BubbleSort);
+            }
+            
+            if(sort_results((void**)data_int, ammount, 0, InsertSort, results[i], 15) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 0, QuickSort, results[i], 20) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 1, QuickSort, results[i], 25) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 2, QuickSort, results[i], 30) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 3, QuickSort, results[i], 35) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_double, ammount, 4, QuickSort, results[i], 40) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 0, Shellsort, results[i], 45) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 1, Shellsort, results[i], 50) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
 
-            memcpy(x, data[i%10], sizeof(int)*ammount);
+            for(int i = 0; i < 5; i++){                //frees local data
+                free(data_int[i]);
+                data_int[i] = NULL;
 
-            results[i][1] = sort(x, ammount, ref[i%10], BubbleSortASM);
+                free(data_double[i]);
+                data_double[i] = NULL;
+            }
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            free(data_int);
+            data_int = NULL;
 
-            // results[i][2] = sort(x, ammount, ref[i%10], HeapSort);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][3] = sort(x, ammount, ref[i%10], InsertSort);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][4] = sort(x, ammount, ref[i%10], MergeSort);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][5] = sort(x, ammount, ref[i%10], QuickSortINT);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][6] = sort(x, ammount, ref[i%10], SelectSort);
-
-            for(int o = 2; o < 7; o++)
-                results[i][o] = 0;
-
-            free(x);
-            x = NULL;
+            free(data_double);
+            data_double = NULL;
 
             #pragma omp atomic                                              //used to display progres of stage
             progres++;
@@ -121,29 +156,20 @@ int main(int argc, char** argv){                    //in arguments user secifies
 
         }
 
-
         printf("\rProgress: 100%%\n");
         fflush(stdout);
 
         if(error)
             return error;
 
-        result_final = final_result(results, 1000, 7);                  //calculates avg, min, max and standard diviation
+        result_final = final_result(results, 100, 11);                  //calculates avg, min, max and standard diviation
         if(result_final == NULL)
             return 9;
 
-        if(print_results_to_file(result_final, 7, "Results", n) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
+        if(print_results_to_file(result_final, 7, "Results", n, ammount) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
             return 10;
 
-        for(int i = 0; i < 10; i++){                //frees resorces
-            free(data[i]);
-            data[i] = NULL;
-
-            free(ref[i]);
-            ref[i] = NULL;
-        }
-
-        for(int i = 0; i < 1000; i++){
+        for(int i = 0; i < 100; i++){
             free(results[i]);
             results[i] = NULL;
         }
@@ -159,8 +185,6 @@ int main(int argc, char** argv){                    //in arguments user secifies
     }
 
     free(results);
-    free(data);
-    free(ref);
     
     return 0;
 

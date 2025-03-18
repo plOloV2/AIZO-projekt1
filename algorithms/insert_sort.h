@@ -1,1 +1,1 @@
-void InsertSort(int arr[], int n);
+void InsertSort(void *arr, int n, int conf);

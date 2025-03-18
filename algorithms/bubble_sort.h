@@ -1,3 +1,3 @@
-void BubbleSort(int arr[], int n);
+void BubbleSort(void *arr, int n,  int conf);
 
-void BubbleSortASM(int arr[], int n);
+void BubbleSortASM(void *arr, int n,  int conf);
