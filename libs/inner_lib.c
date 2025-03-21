@@ -79,7 +79,7 @@ double sort(void *data, int size, int config, void *ref, void (*f)(void *, int, 
     (*f)(data, size, config);               //cals sort function
     t = omp_get_wtime() - t;                //ends measurment
 
-    if(config >= 0){
+    if(config != 4){
         if(!compare_arraysINT(data, ref, size))    //checks if arrays was sorted corectly
             return -1.0;
     } else if(!compare_arraysDOUBLE(data, ref, size))

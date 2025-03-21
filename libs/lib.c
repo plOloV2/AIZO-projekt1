@@ -61,6 +61,11 @@ double** creat_dataDOUBLE(int ammount){
 
     data[0] = gen_data(ammount, sizeof(double));
 
+    for(int i = 0; i < ammount; i++)
+        if(isnan(data[0][i]))
+            data[0][i] = ((double)rand() / RAND_MAX) * 2e100 - 1e100;
+
+    
     memcpy(data[1], data[0], sizeof(double)*ammount);
     qsort(data[1], ammount, sizeof(double), compareDOUBLE);
 

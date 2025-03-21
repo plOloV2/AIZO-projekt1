@@ -11,10 +11,8 @@
 
 /*
     TO DO:
-    -naprawić qsort double
-    -shell dwa ciągi kroków 
-    -heap sort
-    -insert sort
+    -shell dwa ciągi kroków
+    -opisać kod
 */
 
 int main(int argc, char** argv){                    //in arguments user secifies sizes of data sets to sort
