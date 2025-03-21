@@ -3,7 +3,7 @@
 #include<omp.h>
 #include<time.h>
 #include"libs/lib.h"
-#include"algorithms/bubble_sort.h"
+// #include"algorithms/bubble_sort.h" -> unused
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
 #include"algorithms/quick_sort.h"
@@ -11,13 +11,10 @@
 
 /*
     TO DO:
-    -za każdym razem nowe dane
-    -od razu posortowane ros
-    -od razu posortowane mal
-    -posortowane częsciowo 33% i 67%
-    -qsort na int i double
-    -qsort różne pivoty
+    -naprawić qsort double
     -shell dwa ciągi kroków 
+    -heap sort
+    -insert sort
 */
 
 int main(int argc, char** argv){                    //in arguments user secifies sizes of data sets to sort
@@ -57,75 +54,62 @@ int main(int argc, char** argv){                    //in arguments user secifies
             }
 
 
-            results[i] = (double*)malloc(sizeof(double) * 55);
+            results[i] = (double*)malloc(sizeof(double) * 45);
             if(results[i] == NULL){
                 #pragma omp atomic write
                 error = 5;
                 continue;
             }
-
-
-            if(sort_results((void**)data_int, ammount, 0, BubbleSort, results[i], 0) != 0){
-                #pragma omp atomic write
-                error = 6;
-                continue;
-            }
-
-            if(sort_results((void**)data_int, ammount, 0, BubbleSortASM, results[i], 5) != 0){
+            
+            if(sort_results((void**)data_int, ammount, 0, HeapSort, results[i], 0) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 0, HeapSort, results[i], 10) != 0){
+            if(sort_results((void**)data_int, ammount, 0, InsertSort, results[i], 5) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 0, InsertSort, results[i], 15) != 0){
+            if(sort_results((void**)data_int, ammount, 0, QuickSort, results[i], 10) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 0, QuickSort, results[i], 20) != 0){
+            if(sort_results((void**)data_int, ammount, 1, QuickSort, results[i], 15) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 1, QuickSort, results[i], 25) != 0){
+            if(sort_results((void**)data_int, ammount, 2, QuickSort, results[i], 20) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 2, QuickSort, results[i], 30) != 0){
+            if(sort_results((void**)data_int, ammount, 3, QuickSort, results[i], 25) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 3, QuickSort, results[i], 35) != 0){
+            if(sort_results((void**)data_double, ammount, 4, QuickSort, results[i], 30) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_double, ammount, 4, QuickSort, results[i], 40) != 0){
+            if(sort_results((void**)data_int, ammount, 0, Shellsort, results[i], 35) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
             }
             
-            if(sort_results((void**)data_int, ammount, 0, Shellsort, results[i], 45) != 0){
-                #pragma omp atomic write
-                error = 6;
-                continue;
-            }
-            
-            if(sort_results((void**)data_int, ammount, 1, Shellsort, results[i], 50) != 0){
+            if(sort_results((void**)data_int, ammount, 1, Shellsort, results[i], 40) != 0){
                 #pragma omp atomic write
                 error = 6;
                 continue;
@@ -162,11 +146,11 @@ int main(int argc, char** argv){                    //in arguments user secifies
         if(error)
             return error;
 
-        result_final = final_result(results, 100, 11);                  //calculates avg, min, max and standard diviation
+        result_final = final_result(results, 100, 9);                  //calculates avg, min, max and standard diviation
         if(result_final == NULL)
             return 9;
 
-        if(print_results_to_file(result_final, 11, "Results", n, ammount) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
+        if(print_results_to_file(result_final, 9, "Results", n, ammount) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
             return 10;
 
         for(int i = 0; i < 100; i++){
@@ -174,7 +158,7 @@ int main(int argc, char** argv){                    //in arguments user secifies
             results[i] = NULL;
         }
             
-        for(int i = 0; i < 11; i++){
+        for(int i = 0; i < 9; i++){
             free(result_final[i]);
             result_final[i] = NULL;
         }

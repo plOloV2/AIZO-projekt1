@@ -8,11 +8,11 @@
 
 int** creat_dataINT(int ammount){
 
-    int **data = (int**)malloc(sizeof(int*) * 5);
+    int **data = (int**)malloc(sizeof(int*) * 7);
     if(data == NULL)
         return NULL;
 
-    for(int i = 0; i < 5; i++){
+    for(int i = 1; i < 7; i++){
         data[i] = (int*)malloc(sizeof(int) * ammount);
         if(data[i] == NULL)
             return NULL;
@@ -26,28 +26,34 @@ int** creat_dataINT(int ammount){
     memcpy(data[2], data[0], sizeof(int)*ammount);
     qsort(data[2], ammount, sizeof(int), rev_compareINT);
 
-    memcpy(data[3], data[1], sizeof(int)*ammount);
+    memcpy(data[3], data[0], sizeof(int)*ammount);
     int count33 = (ammount * 33) / 100;
     for(int i = 0; i < count33; i++){
         data[3][i] = INT_MIN;
     }
 
-    memcpy(data[4], data[1], sizeof(int)*ammount);
+    memcpy(data[4], data[3], sizeof(int)*ammount);
+    qsort(data[4], ammount, sizeof(int), compareINT);
+
+    memcpy(data[5], data[0], sizeof(int)*ammount);
     int count67 = (ammount * 67) / 100;
     for(int i = 0; i < count67; i++){
-        data[4][i] = INT_MIN;
+        data[5][i] = INT_MIN;
     }
+
+    memcpy(data[6], data[5], sizeof(int)*ammount);
+    qsort(data[6], ammount, sizeof(int), compareINT);
 
     return data;
 }
 
 double** creat_dataDOUBLE(int ammount){
 
-    double **data = (double**)malloc(sizeof(double*) * 5);
+    double **data = (double**)malloc(sizeof(double*) * 7);
     if(data == NULL)
         return NULL;
 
-    for(int i = 0; i < 5; i++){
+    for(int i = 1; i < 7; i++){
         data[i] = (double*)malloc(sizeof(double) * ammount);
         if(data[i] == NULL)
             return NULL;
@@ -61,17 +67,23 @@ double** creat_dataDOUBLE(int ammount){
     memcpy(data[2], data[0], sizeof(double)*ammount);
     qsort(data[2], ammount, sizeof(double), rev_compareDOUBLE);
 
-    memcpy(data[3], data[1], sizeof(double)*ammount);
+    memcpy(data[3], data[0], sizeof(double)*ammount);
     int count33 = (ammount * 33) / 100;
     for(int i = 0; i < count33; i++){
         data[3][i] = -DBL_MAX;
     }
 
-    memcpy(data[4], data[1], sizeof(double)*ammount);
+    memcpy(data[4], data[3], sizeof(double)*ammount);
+    qsort(data[4], ammount, sizeof(double), compareDOUBLE);
+
+    memcpy(data[5], data[0], sizeof(double)*ammount);
     int count67 = (ammount * 67) / 100;
     for(int i = 0; i < count67; i++){
-        data[4][i] = -DBL_MAX;
+        data[5][i] = -DBL_MAX;
     }
+
+    memcpy(data[6], data[5], sizeof(double)*ammount);
+    qsort(data[6], ammount, sizeof(double), compareDOUBLE);
 
     return data;
 }
@@ -81,13 +93,13 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
     if(res == NULL)
         return 1;
 
-    void **local_data = malloc(sizeof(void*) * 5);
+    void **local_data = malloc(sizeof(void*) * 7);
     if(local_data == NULL)
         return 1;
 
     if(config != 4){
 
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < 7; i++){
             local_data[i] = (int*)malloc(sizeof(int) * size);
             if(local_data[i] == NULL)
                 return 2;
@@ -97,7 +109,7 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
 
     } else{
 
-        for(int i = 0; i < 5; i++){
+        for(int i = 0; i < 7; i++){
             local_data[i] = (double*)malloc(sizeof(double) * size);
             if(local_data[i] == NULL)
                 return 2;
@@ -107,8 +119,11 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
 
     }
 
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 3; i++)
         res[i] = sort(local_data[i], size, config, data[1], (*f));
+    
+    res[3] = sort(local_data[3], size, config, data[4], (*f));
+    res[4] = sort(local_data[5], size, config, data[6], (*f));
 
     memcpy(&results_array[start_pos], res, sizeof(double) * 5);
 
@@ -129,7 +144,7 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
 
 double** final_result(double **results, int size, int num_of_sets){     //function to calculate end results
 
-    double **final = (double**)malloc(sizeof(double*) * 11);            //tablica 11x20 (11 algorytmów po 5*4 wyników)
+    double **final = (double**)malloc(sizeof(double*) * 9);            //tablica 9*20 (9 algorytmów po 5*4 wyników)
     if(final == NULL)
         return NULL;
 
@@ -151,8 +166,8 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
 
         for(int i = 0; i < size; i++){
 
-            if(results[i][j] < 0)
-                return NULL;
+            // if(results[i][j] < 0)
+            //     return NULL;
 
             if(results[i][j] > final[j/5][(j%5)*4+3])
                 final[j/5][(j%5)*4+3] = results[i][j];
@@ -184,11 +199,9 @@ int print_results_to_file(double **result, int num_algorithms, const char *filen
         return 0;
     }
 
-    fprintf(fp, "name, data_size, avg1, std_dev1, min1, max1, avg2, std_dev2, min2, max2, avg3, std_dev3, min3, max3, avg4, std_dev4, min4, max4, avg5, std_dev5, min5, max5\n");
+    fprintf(fp, "name, data_size, N_avg, N_std_dev, N_min, N_max, G_avg, G_std_dev, G_min, G_max, D_avg, D_std_dev, D_min, D_max, 33_avg, 33_std_dev, 33_min, 33_max, 67_avg, 67_std_dev, 67_min, 67_max\n");
 
     const char *algorithm_names[] = {
-        "BubbleSort",
-        "BubbleSortASM",
         "HeapSort",
         "InsertSort",
         "QuickSortNormal",
