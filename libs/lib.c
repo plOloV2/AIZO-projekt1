@@ -171,8 +171,8 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
 
         for(int i = 0; i < size; i++){
 
-            // if(results[i][j] < 0)
-            //     return NULL;
+            if(results[i][j] < 0)
+                return NULL;
 
             if(results[i][j] > final[j/5][(j%5)*4+3])
                 final[j/5][(j%5)*4+3] = results[i][j];
