@@ -3,4 +3,5 @@ test
 *.txt
 *.csv
 test.c
-test
+*.7z
+data

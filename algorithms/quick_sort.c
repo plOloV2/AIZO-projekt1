@@ -57,6 +57,8 @@ int pivotI(int *arr, int srt, int end, int pivot_pos){
 
 int pivotD(double *arr, int srt, int end){
 
+    swapD(&arr[(srt+end)/2], &arr[end]);
+
     int i = srt - 1;
 
     for(int j = srt; j < end; j++){

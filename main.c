@@ -3,7 +3,7 @@
 #include<omp.h>
 #include<time.h>
 #include"libs/lib.h"
-// #include"algorithms/bubble_sort.h" -> unused
+// #include"algorithms/bubble_sort.h"   ->  unused
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
 #include"algorithms/quick_sort.h"
@@ -11,7 +11,6 @@
 
 /*
     TO DO:
-    -shell dwa ciągi kroków
     -opisać kod
 */
 
