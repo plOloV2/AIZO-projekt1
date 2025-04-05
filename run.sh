@@ -8,10 +8,10 @@ if [ $? -ne 0 ]; then
 fi
 
 # Set CPU frequency for cores 4-7 to 2.2GHz by forcing userspace governor
-echo "Setting CPU frequency for cores 4-7 to 2.2GHz..."
+echo "Setting CPU frequency for cores 4-7 to 2GHz..."
 for cpu in 4 5 6 7; do
     sudo cpufreq-set -c $cpu -g userspace
-    sudo cpufreq-set -c $cpu -f 2   
+    sudo cpufreq-set -c $cpu -f 2GHz
     if [ $? -ne 0 ]; then
          echo "Failed to set CPU frequency for core $cpu"
          exit 1
@@ -20,7 +20,7 @@ done
 
 # Launch the project using taskset on cores 4-7
 echo "Launching project on cores 4-7..."
-taskset -c 4-7 bin/apk 30000 35000 40000 45000 50000 55000 60000
+taskset -c 4-7 bin/apk 30000 35000 40000 45000 50000 55000 60000 65000 70000 75000 80000 85000 90000 95000
 EXIT_STATUS=$?
 
 echo "Computation completed. Exit code $EXIT_STATUS"
