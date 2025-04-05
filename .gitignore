@@ -4,4 +4,4 @@ test
 *.csv
 test.c
 *.7z
-data
+/data

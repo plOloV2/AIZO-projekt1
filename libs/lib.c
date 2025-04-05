@@ -4,6 +4,9 @@
 #include<math.h>
 #include<stdio.h>
 #include<limits.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include"inner_lib.h"
 
 int** creat_dataINT(int ammount){
@@ -196,7 +199,13 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
 int print_results_to_file(double **result, int num_algorithms, const char *filename_pref, int n, int ammount){   //function to save end results to file
 
     char filename[256];
-    snprintf(filename, sizeof(filename), "%s_%d.csv", filename_pref, n);
+
+    struct stat st = {0};
+    if(stat("data", &st) == -1) 
+        mkdir("data", 0700);
+
+
+    snprintf(filename, sizeof(filename), "data/%s_%d.csv", filename_pref, n);
 
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
