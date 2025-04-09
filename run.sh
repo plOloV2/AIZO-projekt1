@@ -20,7 +20,7 @@ done
 
 # Launch the project using taskset on cores 4-7
 echo "Launching project on cores 4-7..."
-taskset -c 4-7 bin/apk 30000 35000 40000 45000 50000 55000 60000 65000 70000 75000 80000 85000 90000 95000
+taskset -c 4-7 bin/apk 45000 50000 55000 60000 65000 70000 75000 
 EXIT_STATUS=$?
 
 echo "Computation completed. Exit code $EXIT_STATUS"
@@ -38,7 +38,4 @@ done
 python data_reorder.py
 
 exit $EXIT_STATUS
-
-# seaborn
-# matplot/pandas/pyplot
-# stack limit 
+ 
