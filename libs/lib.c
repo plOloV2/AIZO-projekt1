@@ -4,12 +4,14 @@
 #include<math.h>
 #include<stdio.h>
 #include<limits.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<unistd.h>
 #include"inner_lib.h"
 
+
 int** creat_dataINT(int ammount){
+                                                    // Funkcja tworzące zestaw danych int o rozmiaże ammount
 
     int **data = (int**)malloc(sizeof(int*) * 7);
     if(data == NULL)
@@ -20,30 +22,36 @@ int** creat_dataINT(int ammount){
         if(data[i] == NULL)
             return NULL;
     }
-
+                                                    // Pierwsza tablica -> losowe zmienne
     data[0] = gen_data(ammount, sizeof(int));
 
+                                                    // Druga -> posortowane rosnąco
     memcpy(data[1], data[0], sizeof(int)*ammount);
     qsort(data[1], ammount, sizeof(int), compareINT);
 
+                                                    // Trzecia -> posortowane malejąco
     memcpy(data[2], data[0], sizeof(int)*ammount);
     qsort(data[2], ammount, sizeof(int), rev_compareINT);
 
+                                                    // Czwarta -> pierwsze 33% posortowane
     memcpy(data[3], data[0], sizeof(int)*ammount);
     int count33 = (ammount * 33) / 100;
     for(int i = 0; i < count33; i++){
         data[3][i] = INT_MIN;
     }
 
+                                                    // Piąta -> tablica kontrolna do sprawdzenia poprawności sortowania dla 33%
     memcpy(data[4], data[3], sizeof(int)*ammount);
     qsort(data[4], ammount, sizeof(int), compareINT);
 
+                                                    // Szósta -> pierwsze 67% posortowane
     memcpy(data[5], data[0], sizeof(int)*ammount);
     int count67 = (ammount * 67) / 100;
     for(int i = 0; i < count67; i++){
         data[5][i] = INT_MIN;
     }
 
+                                                    // Siudma -> tablica kontrolna do sprawdzenia poprawności sortowania dla 67%
     memcpy(data[6], data[5], sizeof(int)*ammount);
     qsort(data[6], ammount, sizeof(int), compareINT);
 
@@ -51,6 +59,7 @@ int** creat_dataINT(int ammount){
 }
 
 double** creat_dataDOUBLE(int ammount){
+                                                    // Funkcja tworzące zestaw danych double o rozmiaże ammount
 
     double **data = (double**)malloc(sizeof(double*) * 7);
     if(data == NULL)
@@ -62,6 +71,7 @@ double** creat_dataDOUBLE(int ammount){
             return NULL;
     }
 
+                                                    // Pierwsza tablica -> losowe zmienne
     data[0] = gen_data(ammount, sizeof(double));
 
     for(int i = 0; i < ammount; i++)
@@ -69,27 +79,33 @@ double** creat_dataDOUBLE(int ammount){
             data[0][i] = ((double)rand() / RAND_MAX) * 2e100 - 1e100;
 
     
+                                                    // Druga -> posortowane rosnąco
     memcpy(data[1], data[0], sizeof(double)*ammount);
     qsort(data[1], ammount, sizeof(double), compareDOUBLE);
 
+                                                    // Trzecia -> posortowane malejąco
     memcpy(data[2], data[0], sizeof(double)*ammount);
     qsort(data[2], ammount, sizeof(double), rev_compareDOUBLE);
 
+                                                    // Czwarta -> pierwsze 33% posortowane
     memcpy(data[3], data[0], sizeof(double)*ammount);
     int count33 = (ammount * 33) / 100;
     for(int i = 0; i < count33; i++){
         data[3][i] = -DBL_MAX;
     }
 
+                                                    // Piąta -> tablica kontrolna do sprawdzenia poprawności sortowania dla 33%
     memcpy(data[4], data[3], sizeof(double)*ammount);
     qsort(data[4], ammount, sizeof(double), compareDOUBLE);
 
+                                                    // Szósta -> pierwsze 67% posortowane
     memcpy(data[5], data[0], sizeof(double)*ammount);
     int count67 = (ammount * 67) / 100;
     for(int i = 0; i < count67; i++){
         data[5][i] = -DBL_MAX;
     }
 
+                                                    // Siudma -> tablica kontrolna do sprawdzenia poprawności sortowania dla 67%
     memcpy(data[6], data[5], sizeof(double)*ammount);
     qsort(data[6], ammount, sizeof(double), compareDOUBLE);
 
@@ -97,14 +113,19 @@ double** creat_dataDOUBLE(int ammount){
 }
 
 int sort_results(void **data, int size, int config, void (*f)(void *, int, int), double *results_array, int start_pos){
+                                                    // Funkcja miężąca czas sortowania dla algorytmu podanego w parametrze
+                                                    // czasy sortowań zapisuje w tablicy results_array zaczynając od pozycji start_pos
+
     double *res = (double*)malloc(sizeof(double) * 5);
     if(res == NULL)
         return 1;
 
+                                                    // Lokalna kopia tablic do posortowania
     void **local_data = malloc(sizeof(void*) * 7);
     if(local_data == NULL)
         return 1;
 
+                                                    // Zależnie od konfiguracji zapęłnia je zmiennymi int lub double
     if(config != 4){
 
         for(int i = 0; i < 7; i++){
@@ -127,14 +148,17 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
 
     }
 
+                                                    // Sortowanie tablic i zapisanie wyników do tablicy res
     for(int i = 0; i < 3; i++)
         res[i] = sort(local_data[i], size, config, data[1], (*f));
     
     res[3] = sort(local_data[3], size, config, data[4], (*f));
     res[4] = sort(local_data[5], size, config, data[6], (*f));
 
+                                                    // Przekopiowanie wyników z tablicy res do results_array
     memcpy(&results_array[start_pos], res, sizeof(double) * 5);
 
+                                                    //Czyszczenie pamięci
     for(int i = 0; i < 5; i++){
         free(local_data[i]);
         local_data[i] = NULL;
@@ -150,9 +174,12 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
 
 }
 
-double** final_result(double **results, int size, int num_of_sets){     //function to calculate end results
+double** final_result(double **results, int size, int num_of_sets){
+                                                    // Funckja wyznaczająca średnią, min, max oraz odchylenie standardowe dla zebranych wyników
 
-    double **final = (double**)malloc(sizeof(double*) * 9);            //tablica 9*20 (9 algorytmów po 5*4 wyników)
+                                                    // Tablica z wynikami końcowymi o razmiarze num_of_sets * 20 
+                                                    // (num_of_sets algorytmów, po 5 (liczba tablic) * 4 (liczba oblicznych danych) wyników)
+    double **final = (double**)malloc(sizeof(double*) * num_of_sets);            
     if(final == NULL)
         return NULL;
 
@@ -163,20 +190,25 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
             return NULL;
 
         for(int k = 0; k < 20; k++){
+                                                    // Przygotowanie pod poszukiwanie min i max
             if(k % 4 == 2)
                 final[j][k] = DBL_MAX;
             else
                 final[j][k] = 0.0;
+
         }
+
     }
 
     for(int j = 0; j < num_of_sets * 5; j++){
 
         for(int i = 0; i < size; i++){
 
+                                                    // Jeżeli któryś z wyników jest mniejszy od 0 -> wystąpił błąd podczas sortowania
             if(results[i][j] < 0)
                 return NULL;
 
+                                                    // Magia na indeksach napisana zbyt dawno żeby ją teraz rozkodować
             if(results[i][j] > final[j/5][(j%5)*4+3])
                 final[j/5][(j%5)*4+3] = results[i][j];
 
@@ -187,6 +219,7 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
 
         }
 
+                                                    // Wyznaczenie odchylenia standardowego
         for(int i = 0; i < size; i++)
             final[j/5][(j%5)*4+1] += (results[i][j] - final[j/5][(j%5)*4]) * (results[i][j] - final[j/5][(j%5)*4]);
 
@@ -196,7 +229,8 @@ double** final_result(double **results, int size, int num_of_sets){     //functi
     return final;
 }
 
-int print_results_to_file(double **result, int num_algorithms, const char *filename_pref, int n, int ammount){   //function to save end results to file
+int print_results_to_file(double **result, int num_algorithms, const char *filename_pref, int n, int ammount){
+                                                    // Ta funkcja zapisuje otrzymane w tablicy results wyniki do pliku .csv
 
     char filename[256];
 

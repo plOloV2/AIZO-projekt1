@@ -1,5 +1,8 @@
-int gap1[] = {16577, 4193, 1073, 281, 77, 23, 1};                       // https://oeis.org/A036562
-int gap2[] = {13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1};       // https://oeis.org/A036569
+int gap1[] = {16577, 4193, 1073, 281, 77, 23, 1};
+// https://oeis.org/A036562
+
+int gap2[] = {13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1};
+// https://oeis.org/A036569
 
 
 void Ssort(int *data, int n, int *gap){
@@ -27,8 +30,8 @@ void Shellsort(void *arr, int n, int conf){
 
     int *data = arr;
 
-    if(conf == 0){
-
+    if(conf == 0){                  //na podstawie parametru conf wybiera ciąg odstępów
+                                    //użyty w sortowaniu
         Ssort(data, n, gap1);
 
     }else{

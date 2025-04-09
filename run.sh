@@ -35,6 +35,8 @@ for cpu in 4 5 6 7; do
     fi
 done
 
+python data_reorder.py
+
 exit $EXIT_STATUS
 
 # seaborn

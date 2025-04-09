@@ -3,46 +3,43 @@
 #include<omp.h>
 #include<time.h>
 #include"libs/lib.h"
-// #include"algorithms/bubble_sort.h"   ->  unused
+// #include"algorithms/bubble_sort.h"   ->  niewykorzystywane
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
 #include"algorithms/quick_sort.h"
 #include"algorithms/shell_sort.h"
 
-/*
-    TO DO:
-    -opisać kod
-*/
 
-int main(int argc, char** argv){                    //in arguments user secifies sizes of data sets to sort
+int main(int argc, char** argv){                    // W argumentach startowych użytkownik podaje rozmiar tablic do sortowania
 
     if(argc < 2)
         return 1;
 
     srand(time(NULL));
 
-    double **results = (double**)malloc(sizeof(double*)*100);      //array that holds all results for later procesing
+    double **results = (double**)malloc(sizeof(double*)*100);      // Tablica przechowująca czasy sortowań do późniejszej obróbki
     if(results == NULL)
         return 2;
 
-    double **result_final = NULL;                   //array with final results that will be saved to file
+    double **result_final = NULL;                   // Tablica z końcowymi wynikami, zostaje zapisana jako plik .csv
 
-    for(int n = 1; n < argc; n++){                  //main loop, executes as many times as specified in argv
+    for(int n = 1; n < argc; n++){                  // Główna pętla, wykonuje się tyle razy, ile arumentów zostało podane do pragramu jako rozmiary tablic
 
         int ammount = atoi(argv[n]);
 
         int error = 0, progres = 0;
     
-        #pragma omp parallel for                    //multi-thread part of program, every iteration of this for is executed on separate thread
+        #pragma omp parallel for                    // Wielo-wątkowa część programu, każda iteracja poniższej pętli for wykonywana jest przez osobny wątek
         for(int i = 0; i < 100; i++){
 
+                                                    // Tworzenie tablic z zmiennymi int to późniejszego sortowania
             int **data_int = creat_dataINT(ammount);
             if(data_int == NULL){
                 #pragma omp atomic write
                 error = 3;
                 continue;
             }
-
+                                                    // Tworzenie tablic z zmiennymi double to późniejszego sortowania
             double **data_double = creat_dataDOUBLE(ammount);
             if(data_double == NULL){
                 #pragma omp atomic write
@@ -50,14 +47,15 @@ int main(int argc, char** argv){                    //in arguments user secifies
                 continue;
             }
 
-
+                                                    // Tablica na lokale wyniki sortowań
             results[i] = (double*)malloc(sizeof(double) * 45);
             if(results[i] == NULL){
                 #pragma omp atomic write
                 error = 5;
                 continue;
             }
-            
+
+                                                    // Wywołania algorytmów sortowania, zwrócenie innego kodu jak 0 ozancza wykrycie błędu
             if(sort_results((void**)data_int, ammount, 0, HeapSort, results[i], 0) != 0){
                 #pragma omp atomic write
                 error = 6;
@@ -112,7 +110,7 @@ int main(int argc, char** argv){                    //in arguments user secifies
                 continue;
             }
 
-            for(int i = 0; i < 5; i++){                //frees local data
+            for(int i = 0; i < 5; i++){                // Zwalnianie lokalnej pamięci
                 free(data_int[i]);
                 data_int[i] = NULL;
 
@@ -126,10 +124,10 @@ int main(int argc, char** argv){                    //in arguments user secifies
             free(data_double);
             data_double = NULL;
 
-            #pragma omp atomic                                              //used to display progres of stage
+            #pragma omp atomic                          // Licznik postępu
             progres++;
 
-            if(omp_get_thread_num() == 0){
+            if(omp_get_thread_num() == 0){              // Wątek 0 wypisuje postęp do konsoli
                 #pragma omp critical
                 printf("\rProgress: %i%%", progres);
                 fflush(stdout);
@@ -143,13 +141,16 @@ int main(int argc, char** argv){                    //in arguments user secifies
         if(error)
             return error;
 
-        result_final = final_result(results, 100, 9);                  //calculates avg, min, max and standard diviation
+                                                        // Wyznaczenie średniej, min, max oraz odchylenia standardowego wyników
+        result_final = final_result(results, 100, 9);
         if(result_final == NULL)
             return 9;
 
-        if(print_results_to_file(result_final, 9, "Results", n, ammount) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
+                                                        // Zapisanie otrzymanych wyników do pliku "Results_x.csv", x to iteracja głownej pętli
+        if(print_results_to_file(result_final, 9, "Results", n, ammount) != 1)
             return 10;
 
+                                                        // Zwalnienie niewykorzystywanej już pamięci
         for(int i = 0; i < 100; i++){
             free(results[i]);
             results[i] = NULL;
