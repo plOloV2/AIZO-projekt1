@@ -159,7 +159,7 @@ int sort_results(void **data, int size, int config, void (*f)(void *, int, int),
     memcpy(&results_array[start_pos], res, sizeof(double) * 5);
 
                                                     //Czyszczenie pamięci
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 7; i++){
         free(local_data[i]);
         local_data[i] = NULL;
     }

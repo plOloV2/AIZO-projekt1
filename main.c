@@ -110,7 +110,7 @@ int main(int argc, char** argv){                    // W argumentach startowych 
                 continue;
             }
 
-            for(int i = 0; i < 5; i++){                // Zwalnianie lokalnej pamięci
+            for(int i = 0; i < 7; i++){                // Zwalnianie lokalnej pamięci
                 free(data_int[i]);
                 data_int[i] = NULL;
 
