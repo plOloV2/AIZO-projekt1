@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<omp.h>
-#include<time.h>
 #include"libs/lib.h"
 // #include"algorithms/bubble_sort.h"   ->  niewykorzystywane
 #include"algorithms/heap_sort.h"

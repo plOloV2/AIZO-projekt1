@@ -1,6 +1,6 @@
-#include<stdlib.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <omp.h>
+#include <time.h>
 
 void swapI(int *a, int *b){
 
@@ -108,12 +108,6 @@ void Dsort(double *arr, int start, int end){
 
 void QuickSort(void *arr, int n, int conf){
 
-    unsigned int seed;
-    FILE *f = fopen("/dev/urandom", "rb");
-    fread(&seed, sizeof(seed), 1, f);
-    fclose(f);
-    seed += omp_get_thread_num();
-
                                         /* zmienna conf odpowiada za wybór rodzaju algorytmu qs
                                             0 - pivot środkowy element tablicy
                                             1 - pivot to pierwszy element tablicy
@@ -122,6 +116,11 @@ void QuickSort(void *arr, int n, int conf){
                                             4 - sortowanie zmiennych double
                                             >4 - pivot to ostatni element tablicy
                                         */
+
+    unsigned int seed;
+
+    if(conf == 3)
+        seed = (unsigned int)time(NULL) + omp_get_thread_num();
 
     if(conf == 4){
 

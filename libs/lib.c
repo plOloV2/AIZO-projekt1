@@ -3,6 +3,7 @@
 #include<float.h>
 #include<math.h>
 #include<stdio.h>
+#include<time.h>
 #include<limits.h>
 #include<sys/types.h>
 #include<sys/stat.h>
@@ -25,9 +26,17 @@ int** creat_dataINT(int ammount){
 
     unsigned int seed;
     FILE *f = fopen("/dev/urandom", "rb");
-    fread(&seed, sizeof(seed), 1, f);
-    fclose(f);
-    seed += omp_get_thread_num();
+    if (f != NULL) {
+        if (fread(&seed, sizeof(seed), 1, f) != 1) {
+            // Read failed: fallback to less secure method
+            seed = (unsigned int)time(NULL) + omp_get_thread_num();
+        }
+        fclose(f);
+    } else {
+        // File open failed: use time + thread ID
+        seed = (unsigned int)time(NULL) + omp_get_thread_num();
+    }
+
                                                     // Pierwsza tablica -> losowe zmienne
     data[0] = gen_data(ammount, sizeof(int), &seed);
 
@@ -77,11 +86,19 @@ double** creat_dataDOUBLE(int ammount){
             return NULL;
     }
 
+
     unsigned int seed;
     FILE *f = fopen("/dev/urandom", "rb");
-    fread(&seed, sizeof(seed), 1, f);
-    fclose(f);
-    seed += omp_get_thread_num();
+    if(f != NULL){
+        if (fread(&seed, sizeof(seed), 1, f) != 1) {
+            // Read failed: fallback to less secure method
+            seed = (unsigned int)time(NULL) + omp_get_thread_num();
+        }
+        fclose(f);
+    } else {
+        // File open failed: use time + thread ID
+        seed = (unsigned int)time(NULL) + omp_get_thread_num();
+    }
 
                                                     // Pierwsza tablica -> losowe zmienne
     data[0] = gen_data(ammount, sizeof(double), &seed);
