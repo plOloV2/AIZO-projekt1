@@ -6,14 +6,16 @@ import numpy as np
 # Load and filter data
 df = pd.read_csv('algorithm_metrics.csv')
 quick_sort_data = df[
-    (
-        (df['Algorithm'].str.startswith('QuickSort') & 
-        (df['Algorithm'] != 'QuickSortRandom')
-    ) | 
-    (df['Algorithm'] == 'HeapSort')  # Include HeapSort
-) & 
-    (df['Data_Type'] == 'N') & 
-    (df['Size'].between(45000, 75000))
+    (df['Algorithm'] != 'HeapSort') &
+    (df['Algorithm'] != 'InsertionSort') &
+    (df['Algorithm'] != 'QuickSortŚrodek') &
+    (df['Algorithm'] != 'QuickSortPierwszy') &
+    (df['Algorithm'] != 'QuickSortOstatni') &
+    # (df['Algorithm'] != 'QuickSortLosowy') &
+    (df['Algorithm'] != 'QuickSortDouble') &
+    (df['Algorithm'] != 'ShellSortSedgewicka') &
+    (df['Algorithm'] != 'ShellSortIncerpiego-Sedgewicka') &
+    (df['Data_Type'] == 'G')
 ].sort_values('Size')
 
 # Create plot
@@ -24,42 +26,56 @@ palette = sns.color_palette("husl", n_colors=len(quick_sort_data['Algorithm'].un
 # Calculate positions and offsets
 sizes = quick_sort_data['Size'].unique()
 n_algorithms = len(quick_sort_data['Algorithm'].unique())
-width = 0.6  # Width of each "box" group
+width = 1  # Width of each "box" group
 
 for idx, (algo_name, algo_data) in enumerate(quick_sort_data.groupby('Algorithm')):
-    # Calculate x positions with offset
-    x_base = np.arange(len(sizes))
-    x_pos = x_base + (idx - n_algorithms/2 + 0.5) * (width/n_algorithms)
+    # Base x positions (0, 1, 2, ... for sizes)
+    x_pos = np.arange(len(sizes))
     
-    # Box dimensions
-    box_top = algo_data['Avg'] + algo_data['Std_Dev']
-    box_bottom = algo_data['Avg'] - algo_data['Std_Dev']
+    # Convert time values to milliseconds
+    avg_ms = algo_data['Avg'] * 1000
+    std_dev_ms = algo_data['Std_Dev'] * 1000
+    min_ms = algo_data['Min'] * 1000
+    max_ms = algo_data['Max'] * 1000
     
-    # Plot elements
-    plt.bar(x_pos, height=box_top - box_bottom, width=width/n_algorithms*0.8,
+    # Box dimensions in milliseconds
+    box_top = avg_ms + std_dev_ms
+    box_bottom = avg_ms - std_dev_ms
+    
+    # Plot bars (std-dev boxes)
+    plt.bar(x_pos, height=box_top - box_bottom, width=.25,
             bottom=box_bottom, color=palette[idx], alpha=0.6, label=algo_name)
     
     # Whiskers (min/max)
-    plt.vlines(x_pos, algo_data['Min'], algo_data['Max'], 
-              colors=palette[idx], linewidths=1, alpha=0.8)
+    plt.vlines(x_pos, min_ms, max_ms, colors=palette[idx], linewidths=2, alpha=0.8)
     
-    # Median line (using average)
-    plt.hlines(algo_data['Avg'], x_pos - width/(n_algorithms*3), 
-              x_pos + width/(n_algorithms*3), colors='white', linewidths=2)
+    # Median line (average)
+    plt.hlines(avg_ms, x_pos - .1, x_pos + .1, colors='white', linewidths=2)
+    
+    # Dashed line connecting averages
+    plt.plot(x_pos, avg_ms, color=palette[idx], linewidth=2, alpha=0.8, linestyle='--')
 
-# Configure axes
-plt.xticks(np.arange(len(sizes)), sizes)
-plt.title('QuickSort Variants Performance (Random array)', 
-         fontsize=14, pad=20)
-plt.xlabel('Array Size', fontsize=12)
-plt.ylabel('Time (seconds)', fontsize=12)
+
+# Configure axes and labels
+plt.xticks(np.arange(len(sizes)), sizes, fontsize=18)
+plt.yticks(fontsize=18)
+plt.xlabel('Rozmiar Tablic', fontsize=20)
+plt.ylabel('Czas (millisekundy)', fontsize=20)
 plt.legend(
-    title='Algorithm',
-    bbox_to_anchor=(0.5, -0.2),  # Adjust these values for positioning
+    title='Algorytmy',
+    title_fontsize='20',  # Legend title size
+    fontsize='18',        # Legend item text size
+    bbox_to_anchor=(0.5, -0.1),
     loc='upper center',
-    ncol=4,  # Number of columns in the legend
+    ncol=4,
     frameon=True
 )
-plt.subplots_adjust(bottom=0.25)  # Adjust this value based on your legend height
+plt.subplots_adjust(bottom=0.25)
 plt.tight_layout()
+plt.subplots_adjust(
+    left=0.043,     # Space from left edge of window to plot
+    right=0.992,    # Space from right edge of window to plot
+    bottom=0.192,   # Space from bottom edge (adjust if legend is cut off)
+    top=0.986       # Space from top edge
+)
 plt.show()

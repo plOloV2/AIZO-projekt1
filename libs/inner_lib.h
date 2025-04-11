@@ -1,6 +1,6 @@
 #include<stdlib.h>
 
-void* gen_data(int size, size_t type_size);
+void* gen_data(int size, size_t type_size, unsigned int *seed);
 
 int compareINT(const void* a, const void* b);
 

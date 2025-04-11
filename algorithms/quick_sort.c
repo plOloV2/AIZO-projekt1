@@ -1,4 +1,6 @@
 #include<stdlib.h>
+#include <stdio.h>
+#include <omp.h>
 
 void swapI(int *a, int *b){
 
@@ -20,7 +22,7 @@ void swapD(double *a, double *b){
 }
 
 
-int pivotI(int *arr, int srt, int end, int pivot_pos){
+int pivotI(int *arr, int srt, int end, int pivot_pos, unsigned int *seed){
                                         // srt -> indeks tablicy od którego należy zacząć sortowanie
                                         // end -> indeks tablicy na którym należy zakończyć sortowanie
 
@@ -34,7 +36,7 @@ int pivotI(int *arr, int srt, int end, int pivot_pos){
             break;
             
         case 3:                         // 3 -> pivot to losowy element tablicy
-            swapI(&arr[(rand() % (end - srt)) + srt], &arr[end]);
+            swapI(&arr[(rand_r(seed) % (end - srt)) + srt], &arr[end]);
             break;
 
         default:                        // -> pivot to ostatni element tablicy
@@ -77,15 +79,15 @@ int pivotD(double *arr, int srt, int end){
 }
 
 
-void Isort(int *arr, int start, int end, int pivot_pos){
+void Isort(int *arr, int start, int end, int pivot_pos, unsigned int *seed){
     
     if(end <= start)                    // warunek zakończenia rekurencji
         return;
 
-    int pivot = pivotI(arr, start, end, pivot_pos);
+    int pivot = pivotI(arr, start, end, pivot_pos, seed);
 
-    Isort(arr, start, pivot - 1, pivot_pos);    // rekurencyjne wywołania 
-    Isort(arr, pivot + 1, end, pivot_pos);
+    Isort(arr, start, pivot - 1, pivot_pos, seed);    // rekurencyjne wywołania 
+    Isort(arr, pivot + 1, end, pivot_pos, seed);
 
 }
 
@@ -106,6 +108,12 @@ void Dsort(double *arr, int start, int end){
 
 void QuickSort(void *arr, int n, int conf){
 
+    unsigned int seed;
+    FILE *f = fopen("/dev/urandom", "rb");
+    fread(&seed, sizeof(seed), 1, f);
+    fclose(f);
+    seed += omp_get_thread_num();
+
                                         /* zmienna conf odpowiada za wybór rodzaju algorytmu qs
                                             0 - pivot środkowy element tablicy
                                             1 - pivot to pierwszy element tablicy
@@ -123,7 +131,7 @@ void QuickSort(void *arr, int n, int conf){
     } else {
 
         int *array = arr;
-        Isort(array, 0, n - 1, conf);
+        Isort(array, 0, n - 1, conf, &seed);
 
     }
 

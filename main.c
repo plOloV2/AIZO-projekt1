@@ -15,8 +15,6 @@ int main(int argc, char** argv){                    // W argumentach startowych 
     if(argc < 2)
         return 1;
 
-    srand(time(NULL));
-
     double **results = (double**)malloc(sizeof(double*)*100);      // Tablica przechowująca czasy sortowań do późniejszej obróbki
     if(results == NULL)
         return 2;

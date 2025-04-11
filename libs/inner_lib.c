@@ -4,7 +4,7 @@
 #include<math.h>
 #include<limits.h>
 
-void* gen_data(int size, size_t type_size){
+void* gen_data(int size, size_t type_size, unsigned int *seed){
                                                     // Funkcja generująca losową tablicę o podanym rozmiarze i rozmiarze zmiennych
 
     void *res = malloc(type_size * size);
@@ -17,7 +17,7 @@ void* gen_data(int size, size_t type_size){
         unsigned char *byte_ptr = (unsigned char *)res + (i * type_size);
 
         for(int k = 0; k < type_size; k++) 
-            byte_ptr[k] = rand() % 256;
+            byte_ptr[k] = rand_r(seed) % 256;
 
     }
 

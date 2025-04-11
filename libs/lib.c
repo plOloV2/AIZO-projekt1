@@ -22,8 +22,14 @@ int** creat_dataINT(int ammount){
         if(data[i] == NULL)
             return NULL;
     }
+
+    unsigned int seed;
+    FILE *f = fopen("/dev/urandom", "rb");
+    fread(&seed, sizeof(seed), 1, f);
+    fclose(f);
+    seed += omp_get_thread_num();
                                                     // Pierwsza tablica -> losowe zmienne
-    data[0] = gen_data(ammount, sizeof(int));
+    data[0] = gen_data(ammount, sizeof(int), &seed);
 
                                                     // Druga -> posortowane rosnąco
     memcpy(data[1], data[0], sizeof(int)*ammount);
@@ -71,13 +77,19 @@ double** creat_dataDOUBLE(int ammount){
             return NULL;
     }
 
+    unsigned int seed;
+    FILE *f = fopen("/dev/urandom", "rb");
+    fread(&seed, sizeof(seed), 1, f);
+    fclose(f);
+    seed += omp_get_thread_num();
+
                                                     // Pierwsza tablica -> losowe zmienne
-    data[0] = gen_data(ammount, sizeof(double));
+    data[0] = gen_data(ammount, sizeof(double), &seed);
 
     for(int i = 0; i < ammount; i++)
         if(isnan(data[0][i]))
-            data[0][i] = ((double)rand() / RAND_MAX) * 2e100 - 1e100;
-
+            data[0][i] = ((double)rand_r(&seed) / RAND_MAX) * 2e100 - 1e100;
+        
     
                                                     // Druga -> posortowane rosnąco
     memcpy(data[1], data[0], sizeof(double)*ammount);
