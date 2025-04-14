@@ -1,126 +1,136 @@
-#include"lib.h"
-#include"algorithms/bubble_sort.h"
+#include<stdio.h>
+#include<stdlib.h>
+#include<omp.h>
+#include"libs/lib.h"
+// #include"algorithms/bubble_sort.h"   ->  niewykorzystywane
 #include"algorithms/heap_sort.h"
 #include"algorithms/insert_sort.h"
 #include"algorithms/quick_sort.h"
 #include"algorithms/shell_sort.h"
 
-/*
-    TO DO:
-    -za każdym razem nowe dane
-    -od razu posortowane ros
-    -od razu posortowane mal
-    -posortowane częsciowo 33% i 67%
-    -qsort na int i double
-    -qsort różne pivoty
-    -shell dwa ciągi kroków 
-*/
 
-int main(int argc, char** argv){                    //in arguments user secifies sizes of data sets to sort
+int main(int argc, char** argv){                    // W argumentach startowych użytkownik podaje rozmiar tablic do sortowania
 
     if(argc < 2)
         return 1;
 
-    srand(time(NULL));
-
-    int **data = (int**)malloc(sizeof(int*)*10);    //alocating memory for data sets
-    if(data == NULL)
+    double **results = (double**)malloc(sizeof(double*)*100);      // Tablica przechowująca czasy sortowań do późniejszej obróbki
+    if(results == NULL)
         return 2;
 
-    int **ref = (int**)malloc(sizeof(int*)*10);     //sorted arrays for reference to check if sorting was succesful
-    if(ref == NULL)
-        return 3;
+    double **result_final = NULL;                   // Tablica z końcowymi wynikami, zostaje zapisana jako plik .csv
 
-    double **results = (double**)malloc(sizeof(double*)*1000);      //array that holds all results for later procesing
-    if(results == NULL)
-        return 4;
-
-    double **result_final = NULL;                   //array with final results that will be saved to file
-
-    for(int n = 1; n < argc; n++){                  //main loop, executes as many times as specified in argv
+    for(int n = 1; n < argc; n++){                  // Główna pętla, wykonuje się tyle razy, ile arumentów zostało podane do pragramu jako rozmiary tablic
 
         int ammount = atoi(argv[n]);
 
-        for(int i = 0; i < 10; i++){                //generation of data sets, each array has size of argv[n]
-
-            data[i] = gen_data(ammount, sizeof(int));
-            if(data[i] == NULL)
-                return 5;
-
-            ref[i] = (int*)malloc(sizeof(int)*ammount);
-            if(ref[i] == NULL)
-                return 6;
-
-            memcpy(ref[i], data[i], sizeof(int)*ammount);   //copies generated data to new array, and then sorts it with build in qsort() function
-
-            qsort(ref[i], ammount, sizeof(int), compare);   
-
-        }
-
         int error = 0, progres = 0;
     
-        #pragma omp parallel for                    //multi-thread part of program, every iteration of this for is executed on separate thread
-        for(int i = 0; i < 1000; i++){
+        #pragma omp parallel for                    // Wielo-wątkowa część programu, każda iteracja poniższej pętli for wykonywana jest przez osobny wątek
+        for(int i = 0; i < 100; i++){
 
-            int *x = (int*)malloc(sizeof(int) * ammount);   //creats local copy of data set 
-            if(x == NULL){
+                                                    // Tworzenie tablic z zmiennymi int to późniejszego sortowania
+            int **data_int = creat_dataINT(ammount);
+            if(data_int == NULL){
                 #pragma omp atomic write
-                error = 7;
+                error = 3;
+                continue;
+            }
+                                                    // Tworzenie tablic z zmiennymi double to późniejszego sortowania
+            double **data_double = creat_dataDOUBLE(ammount);
+            if(data_double == NULL){
+                #pragma omp atomic write
+                error = 4;
+                continue;
+            }
+
+                                                    // Tablica na lokale wyniki sortowań
+            results[i] = (double*)malloc(sizeof(double) * 45);
+            if(results[i] == NULL){
+                #pragma omp atomic write
+                error = 5;
+                continue;
+            }
+
+                                                    // Wywołania algorytmów sortowania, zwrócenie innego kodu jak 0 ozancza wykrycie błędu
+            if(sort_results((void**)data_int, ammount, 0, HeapSort, results[i], 0) != 0){
+                #pragma omp atomic write
+                error = 6;
                 continue;
             }
             
-            memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            results[i] = (double*)malloc(sizeof(double) * 7);
-            if(results[i] == NULL){
+            if(sort_results((void**)data_int, ammount, 0, InsertSort, results[i], 5) != 0){
                 #pragma omp atomic write
-                error = 8;
+                error = 6;
                 continue;
-            }                                       
-                                                                                //sorts local copy and compares to ref[], after every sort() local copy is restored
-            results[i][0] = sort(x, ammount, ref[i%10], BubbleSort);
+            }
+            
+            if(sort_results((void**)data_int, ammount, 0, QuickSort, results[i], 10) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 1, QuickSort, results[i], 15) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 2, QuickSort, results[i], 20) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 3, QuickSort, results[i], 25) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_double, ammount, 4, QuickSort, results[i], 30) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 0, Shellsort, results[i], 35) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
+            
+            if(sort_results((void**)data_int, ammount, 1, Shellsort, results[i], 40) != 0){
+                #pragma omp atomic write
+                error = 6;
+                continue;
+            }
 
-            memcpy(x, data[i%10], sizeof(int)*ammount);
+            for(int i = 0; i < 7; i++){                // Zwalnianie lokalnej pamięci
+                free(data_int[i]);
+                data_int[i] = NULL;
 
-            results[i][1] = sort(x, ammount, ref[i%10], BubbleSortASM);
+                free(data_double[i]);
+                data_double[i] = NULL;
+            }
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
+            free(data_int);
+            data_int = NULL;
 
-            // results[i][2] = sort(x, ammount, ref[i%10], HeapSort);
+            free(data_double);
+            data_double = NULL;
 
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][3] = sort(x, ammount, ref[i%10], InsertSort);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][4] = sort(x, ammount, ref[i%10], MergeSort);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][5] = sort(x, ammount, ref[i%10], QuickSortINT);
-
-            // memcpy(x, data[i%10], sizeof(int)*ammount);
-
-            // results[i][6] = sort(x, ammount, ref[i%10], SelectSort);
-
-            for(int o = 2; o < 7; o++)
-                results[i][o] = 0;
-
-            free(x);
-            x = NULL;
-
-            #pragma omp atomic                                              //used to display progres of stage
+            #pragma omp atomic                          // Licznik postępu
             progres++;
 
-            if(omp_get_thread_num() == 0){
+            if(omp_get_thread_num() == 0){              // Wątek 0 wypisuje postęp do konsoli
                 #pragma omp critical
-                printf("\rProgress: %i%%", progres / 10);
+                printf("\rProgress: %i%%", progres);
                 fflush(stdout);
             }
 
         }
-
 
         printf("\rProgress: 100%%\n");
         fflush(stdout);
@@ -128,27 +138,22 @@ int main(int argc, char** argv){                    //in arguments user secifies
         if(error)
             return error;
 
-        result_final = final_result(results, 1000, 7);                  //calculates avg, min, max and standard diviation
+                                                        // Wyznaczenie średniej, min, max oraz odchylenia standardowego wyników
+        result_final = final_result(results, 100, 9);
         if(result_final == NULL)
             return 9;
 
-        if(print_results_to_file(result_final, 7, "Results", n) != 1)   //save calculated results to file "Results_x.txt" where x is iteration of main loop
+                                                        // Zapisanie otrzymanych wyników do pliku "Results_x.csv", x to iteracja głownej pętli
+        if(print_results_to_file(result_final, 9, "Results", n, ammount) != 1)
             return 10;
 
-        for(int i = 0; i < 10; i++){                //frees resorces
-            free(data[i]);
-            data[i] = NULL;
-
-            free(ref[i]);
-            ref[i] = NULL;
-        }
-
-        for(int i = 0; i < 1000; i++){
+                                                        // Zwalnienie niewykorzystywanej już pamięci
+        for(int i = 0; i < 100; i++){
             free(results[i]);
             results[i] = NULL;
         }
             
-        for(int i = 0; i < 7; i++){
+        for(int i = 0; i < 9; i++){
             free(result_final[i]);
             result_final[i] = NULL;
         }
@@ -159,8 +164,6 @@ int main(int argc, char** argv){                    //in arguments user secifies
     }
 
     free(results);
-    free(data);
-    free(ref);
     
     return 0;
 

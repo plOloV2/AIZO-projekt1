@@ -5,6 +5,13 @@
         "bubble_sort.h": "c",
         "*.tcc": "cpp",
         "list": "cpp",
-        "float.h": "c"
+        "float.h": "c",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "span": "cpp",
+        "random": "cpp",
+        "functional": "cpp",
+        "atomic": "c"
     }
 }

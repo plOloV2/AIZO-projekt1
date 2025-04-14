@@ -1,1 +1,1 @@
-void HeapSort(int arr[], int n);
+void HeapSort(void *arr, int n, int conf);
